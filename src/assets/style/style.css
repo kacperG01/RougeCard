@@ -1,0 +1,48 @@
+body {
+  background-color: black;
+  color: rgb(0, 255, 0);
+}
+
+button {
+  margin: 5px;
+  padding: 10px;
+  border: 1px white solid;
+  background-color: black;
+  color: white;
+}
+
+a {
+    color: blueviolet;
+}
+
+.colorBox {
+  margin: 11px;
+  width: 111px;
+  height: 111px;
+  border: 1px dashed white;
+  text-align: center;
+}
+
+.colorCard {
+  margin: 5px;
+  border: 1px solid white;
+
+  width: 130px;
+  height: 180px;
+
+  text-align: center;
+  font-family: fantasy;
+}
+
+.colorCardHint {
+  background-color: rgb(128, 95, 123);
+}
+
+.selClass {
+  border: 5px solid white;
+}
+
+.friend {
+  width: 128px;
+  height: 128px;
+}
