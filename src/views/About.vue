@@ -20,18 +20,7 @@
 <template>
   <h1>About</h1>
 
-  <input type="text"
-          v-on:input="inpCount++"
-          v-on:keydown="getKey"
-          v-on:keydown.e="getKEy">
-
-  <p>{{ 'Input key: ' + inpKey }}</p>
-  <p>{{ 'Input events occured: ' + inpCount }}</p>
-
-  <div
-      v-on:mousemove.once="boxTouched" 
-      v-bind:id="'dabox'">
-    {{ boxtext }}
-  </div>
+  <p>©2026 CasTheDev</p>
+  <p>All rights reserved</p>
 
 </template>

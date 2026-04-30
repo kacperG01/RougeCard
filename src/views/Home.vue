@@ -39,39 +39,18 @@
 </script>
 
 <template>
-  <h1>Home</h1>
+  <h1>Rouge Card - A game of chance, risk and reward</h1>
 
-  <span>Rozmiar: {{ msg }}</span>
+  <h3>The fate has been disturbed!</h3>
 
-  <button v-on:click="sizeChange(1)">+1</button>
-  <button v-on:click="sizeChange(5)">+5</button>
-
-  <button v-on:click="sizeChange(-1)">-1</button>
-  <button v-on:click="sizeChange(-5)">-5</button>
-
-  <button v-on:click="sizeReset">Reset</button>
-  <button v-on:click="gone">DISAPPEAR!</button>
-
-  <div v-show="showDiv"
-        v-bind:class="'tekscior'"
-        v-bind:style="{ 'font-size': msg + 'px' }">
-    
-        <p v-if="msg > default_val">
-            Więcej
-        </p>
-
-        <p v-else-if="msg < default_val">
-            Mniej
-        </p>
-
-        <p v-else>
-            Równo
-        </p>
-
-  </div>
-
-  <ul>
-    <li v-for="x in acts">{{ x }}</li>
-  </ul>
+  <p>A malicious spirit from a shadow realm has corrupted one of the Tarot cards! You have to find out which one it was and then correctly point it our, or else the balance of the world will collapse!</p>
+  <p>Rules:</p>
+  <ol>
+    <li>You start the game with 7 reveal tokens and 3 wish tokens.</li>
+    <li>Click on a card to spend a reveal token and flip it.</li>
+    <li>Every time you reveal an uncorrupted card, another one will be highlighted to narrow your search (but only if it's not revealed).</li>
+    <li>You may spend a wish token to ask the recently revealed card for help (but only the uncorrupted ones).</li>
+    <li>Once you reveal a corrupted card, you'll be able to point out </li>
+  </ol>
 
 </template>

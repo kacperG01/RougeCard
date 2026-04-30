@@ -6,9 +6,14 @@
     import THE_HOLY from '../assets/audio/THE_HOLY.ogg'
     import sadchord2 from '../assets/audio/sadchord2.ogg'
 
-    var attempts = ref(10)
+    var attempts = ref(7)
     var wishes = ref(3)
     var gameover = ref(false)
+    var recent_number = ref('')
+    var corrupted_number = ref('')
+    var corrupted_revealed = ref(false)
+    const guessText = ref('')
+    var gamestate = ref(0)
 
     const card_list = ref([
           {lbl: 'The Fool',             num: '0', txtclr: 'palevioletred', selected: false, corrupted: false, hinted: false,    filesrc: "/images/0_fool.png"},
@@ -36,6 +41,42 @@
           {lbl: 'Time',                 num: 'XXII', txtclr: 'goldenrod', selected: false, corrupted: false, hinted: false,     filesrc: "/images/22_time.png"},
           {lbl: 'The Ending',           num: 'XXIII', txtclr: 'grey', selected: false, corrupted: false, hinted: false,         filesrc: "/images/23_ending.png"},
         ])
+
+    const game_states = ref([
+        "Click on cards to reveal them. Find the corrupted card!",
+        "You've found the corrupted card! Now you have to find out what its original number was.",
+        "Success! You've banished the spirit!",
+        "You couldn't find the corrupted card...",
+        "You guessed wrong.",
+        "You forced an ending. The spirit is banished, but you'll never know where it was."
+        ])
+
+    const card_wishes={ 
+        "0":"The Fool wants to help you by highlighting an unrevealed card that isn't corrupted.", 
+        "I":"The Magican can give you one free reveal token he has in his pocket.", 
+        "II":"You can join The High Priestess in prayer to reveal a rangom highlighted card without spending a token.",
+        "III":"By the grace of The Empress, you may copy the last wish you made. If you haven't made any wishes yet, nothing will happen and you'll keep the token.",
+        "IV":"By the grace of The Emperor, ",
+        "V":"",
+        "VI":"",
+        "VII":"",
+        "VIII":"",
+        "IX":"The Hermit will give you 4 numbers. None of those numbers will belong to the corrupted card.",
+        "X":"You may spin the Wheel of Fortune to reveal a random card without spending a token.",
+        "XI":"",
+        "XII":"The Hanged Man will give you 8 numbers. One of those numbers will belong to the corrupted card.",
+        "XIII":"",
+        "XIV":"Your own Temperance will be judged. You shall receive bonus reveal tokens based on how many wish tokens you have right now.",
+        "XV":"The Devil offers you a deal: immediately reveal the corrupted card and all highlighted ones, but in return you'll lose all your reveal tokens.",
+        "XVI":"",
+        "XVII":"",
+        "XVIII":"",
+        "XIX":"",
+        "XX":"",
+        "XXI":"The World itself is on your side. Reveal every single card that isn't highlighted.",
+        "XXII":"You have the opportunity to turn back time. All cards will be hidden and all tokens will be refunded (except for one wish token, that the Time itself will keep).",
+        "XXIII":"All hope is lost, but you may force an ending by permanently removing the corrupted card from the deck, without knowing what it was. A hollow victory.",
+    };
     
     const select = (idx) => {
         const card = card_list.value[idx]
@@ -47,16 +88,18 @@
 
         card.selected = true
         if(card.corrupted){
-            gameover.value = true
+            //gameover.value = true
             //const audio = new Audio(charjoined)
             const audio = new Audio(THE_HOLY)
             audio.play()
-
-            for (let i = 0; i < card_list.value.length; i++) {
-                if(!card_list.value[i].corrupted && !card_list.value[i].selected){
-                    card_list.value[i].selected = true
-                }
-            }
+            corrupted_revealed.value = true
+            attempts.value += 4
+            gamestate.value = 1
+            //for (let i = 0; i < card_list.value.length; i++) {
+            //    if(!card_list.value[i].corrupted && !card_list.value[i].selected){
+            //        card_list.value[i].selected = true
+            //    }
+            //}
         } 
         else 
         {
@@ -67,12 +110,14 @@
                 audio2.play()
                 const audio1 = new Audio(imagefriend)
                 audio1.play()
+                gamestate.value = 3
                 for (let i = 0; i < card_list.value.length; i++) {
                     if(card_list.value[i].corrupted && !card_list.value[i].selected){
                         card_list.value[i].selected = true
                     }
                 }
             } else {
+                recent_number.value = card.num
                 giveAHint()
             }
         }
@@ -97,6 +142,19 @@
     }
 
     const giveAHint = () => {
+        var amnt = 0;
+
+        for (let i = 0; i < card_list.value.length; i++) {
+            if(!card_list.value[i].selected && !card_list.value[i].hinted && !card_list.value[i].corrupted){
+                amnt += 1
+            }
+        }
+
+        if(amnt == 0){
+            alert("Unable to highlight.")
+            return
+        }
+
         while(true){
             var r = Math.ceil(Math.random()*card_list.value.length);
             const card = card_list.value[r]
@@ -104,6 +162,76 @@
                 card.hinted = true
                 break
             }
+        }
+    }
+
+    const wishTooltip = () => {
+        if(recent_number.value == ''){
+            return "You may not make a wish yet."
+        } else {
+            return card_wishes[recent_number.value]
+        }
+    }
+
+    const makeAWish = () => {
+        if(gameover.value){
+            alert("It's too late. Wishes cannot help you now.")
+            return
+        }
+        if(wishes.value <= 0){
+            alert("You have no wishes left. You're on your own.")
+            return
+        }
+
+        switch(recent_number.value) {
+            case "0":
+                giveAHint()
+                break;
+            case "I":
+                attempts.value = (attempts.value+1)
+                break;
+            case "XXIII":
+                gameover.value = true
+                const audio2 = new Audio(sadchord2)
+                audio2.play()
+                for (let i = 0; i < card_list.value.length; i++) {
+                    if(card_list.value[i].corrupted && !card_list.value[i].selected){
+                        card_list.value[i].selected = true
+                    }
+                }
+                gamestate.value = 5
+                break;
+            default:
+                alert("This wish is either unimplemented or invalid.")
+                return
+        }
+
+        wishes.value = (wishes.value-1)
+        recent_number.value = ""
+    }
+
+    const revealed = () => {
+        return (corrupted_revealed.value && !gameover.value)
+    }
+
+    const getGameState = () => {
+        return game_states.value[gamestate.value]
+    }
+
+    const takeAGuess = () => {
+        if(guessText.value == corrupted_number.value){
+            gameover.value = true
+            const audio = new Audio(charjoined)
+            //const audio = new Audio(THE_HOLY)
+            audio.play()
+            gamestate.value = 2
+        } else {
+            gameover.value = true
+            const audio2 = new Audio(sadchord2)
+            audio2.play()
+            const audio1 = new Audio(imagefriend)
+            audio1.play()
+            gamestate.value = 4
         }
     }
 
@@ -127,11 +255,16 @@
         var r = Math.ceil(Math.random()*card_list.value.length);
         const card = card_list.value[r]
         card.corrupted = true
+        corrupted_number.value = card.num
     })
 </script>
 
 <template>
-    <div class="box">Remaining reveals: {{attempts}}</div>
+    <div class="box">
+        <p>{{ getGameState() }}</p>
+        Reveal tokens: {{attempts}}<br/>Wish tokens: {{wishes}}
+    </div>
+
     <div class="cards">
         <div v-for="(img, index) in card_list"
             :key="index"
@@ -165,6 +298,19 @@
 
         </div>
     </div>
+
+    <div class="box">{{ wishTooltip() }} 
+        <br/>
+        <button v-on:click="makeAWish()">I wish...</button>
+        <p v-if="revealed()">
+            So which card has been corrupted?
+            <form v-on:submit.prevent="takeAGuess">
+                Enter number<input type="text" required v-model="guessText">
+                <button type="submit">Take a guess!</button>
+            </form>
+        </p>
+    </div>
+
 </template>
 
 <style scoped>
